@@ -197,7 +197,7 @@ public class MainActivityFragment  extends Fragment{
             String jsonStr = null;
 
             try {
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/?";
+                final String BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
                 final String SORT_BY_PARAM = "sort_by";
                 final String API_KEY_PARAM = "api_key";
 
