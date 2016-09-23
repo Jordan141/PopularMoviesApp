@@ -43,8 +43,8 @@ public class MainActivityFragment  extends Fragment{
     private MovieGridAdapter mMovieGridAdapter;
 
     private static final String SORT_SETTING_KEY = "sort_setting";
-    private static final String POPULARITY_DESC = "popularity.desc";
-    private static final String RATING_DESC = "vote_average.desc";
+    private static final String POPULARITY_DESC = "popular";
+    private static final String RATING_DESC = "top_rated";
 
     private String mSortBy = POPULARITY_DESC;
 
@@ -197,12 +197,13 @@ public class MainActivityFragment  extends Fragment{
             String jsonStr = null;
 
             try {
-                final String BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-                final String SORT_BY_PARAM = "sort_by";
+                //Add endpoint selection as param per request of reviewer
+                final String BASE_URL = "http://api.themoviedb.org/3/movie/" + params[0] +"?";
+                //final String SORT_BY_PARAM = "sort_by";
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                        .appendQueryParameter(SORT_BY_PARAM, params[0])
+                        //.appendQueryParameter(SORT_BY_PARAM, params[0])
                         .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
                         .build();
 
