@@ -8,14 +8,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.github.ismaeltoe.movies.R;
-import com.github.ismaeltoe.movies.model.Review;
-
 import java.util.List;
 
-/**
- * Created by Ismael on 10/06/2015.
- */
+import uk.co.keybound.popularmovies.R;
+import uk.co.keybound.popularmovies.model.Review;
+
+
 public class ReviewAdapter extends BaseAdapter {
 
     private final Context mContext;

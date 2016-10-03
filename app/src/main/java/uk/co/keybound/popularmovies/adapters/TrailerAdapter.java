@@ -14,9 +14,7 @@ import java.util.List;
 import uk.co.keybound.popularmovies.R;
 import uk.co.keybound.popularmovies.model.Trailer;
 
-/**
- * Created by Ismael on 10/06/2015.
- */
+
 public class TrailerAdapter extends BaseAdapter {
 
     private final Context mContext;

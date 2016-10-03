@@ -1,6 +1,8 @@
 package uk.co.keybound.popularmovies;
 
 
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,7 +30,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import uk.co.keybound.popularmovies.adapters.MovieGridAdapter;
+import uk.co.keybound.popularmovies.data.MovieContract;
 import uk.co.keybound.popularmovies.model.Movie;
 
 
@@ -38,19 +42,38 @@ import uk.co.keybound.popularmovies.model.Movie;
 
 public class MainActivityFragment  extends Fragment{
 
-    private GridView mGridView;
+    @BindView(R.id.gridview_movies)GridView mGridView;
 
     private MovieGridAdapter mMovieGridAdapter;
 
     private static final String SORT_SETTING_KEY = "sort_setting";
     private static final String POPULARITY_DESC = "popular";
     private static final String RATING_DESC = "top_rated";
-
+    private static final String FAVORITE = "favorite";
+    private static final String MOVIES_KEY = "movies";
     private String mSortBy = POPULARITY_DESC;
 
     private ArrayList<Movie> mMovies = null;
 
+    private static final String[] MOVIE_COLUMNS = {
+            MovieContract.MovieEntry._ID,
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_TITLE,
+            MovieContract.MovieEntry.COLUMN_IMAGE,
+            MovieContract.MovieEntry.COLUMN_IMAGE2,
+            MovieContract.MovieEntry.COLUMN_OVERVIEW,
+            MovieContract.MovieEntry.COLUMN_RATING,
+            MovieContract.MovieEntry.COLUMN_DATE
+    };
 
+    public static final int COL_ID = 0;
+    public static final int COL_MOVIE_ID = 1;
+    public static final int COL_TITLE = 2;
+    public static final int COL_IMAGE = 3;
+    public static final int COL_IMAGE2 = 4;
+    public static final int COL_OVERVIEW = 5;
+    public static final int COL_RATING = 6;
+    public static final int COL_DATE = 7;
 
    public MainActivityFragment() {
     }
@@ -77,6 +100,7 @@ public class MainActivityFragment  extends Fragment{
 
         MenuItem action_sort_by_popularity = menu.findItem(R.id.action_sort_by_popularity);
         MenuItem action_sort_by_rating = menu.findItem(R.id.action_sort_by_rating);
+        MenuItem action_sort_by_favorite = menu.findItem(R.id.action_sort_by_favorite);
 
         if (mSortBy.contentEquals(POPULARITY_DESC)) {
             if (!action_sort_by_popularity.isChecked()) {
@@ -85,6 +109,10 @@ public class MainActivityFragment  extends Fragment{
         } else if (mSortBy.contentEquals(RATING_DESC)) {
             if (!action_sort_by_rating.isChecked()) {
                 action_sort_by_rating.setChecked(true);
+            }
+        } else if (mSortBy.contentEquals(FAVORITE)) {
+            if (!action_sort_by_popularity.isChecked()) {
+                action_sort_by_favorite.setChecked(true);
             }
         }
     }
@@ -111,6 +139,15 @@ public class MainActivityFragment  extends Fragment{
                 mSortBy = RATING_DESC;
                 updateMovies(mSortBy);
                 return true;
+            case R.id.action_sort_by_favorite:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                } else {
+                    item.setChecked(true);
+                }
+                mSortBy = FAVORITE;
+                updateMovies(mSortBy);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -122,7 +159,6 @@ public class MainActivityFragment  extends Fragment{
 
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
-        mGridView = (GridView) view.findViewById(R.id.gridview_movies);
 
         mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
 
@@ -140,6 +176,13 @@ public class MainActivityFragment  extends Fragment{
             if (savedInstanceState.containsKey(SORT_SETTING_KEY)) {
                 mSortBy = savedInstanceState.getString(SORT_SETTING_KEY);
             }
+
+            if (savedInstanceState.containsKey(MOVIES_KEY)) {
+                mMovies = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
+                mMovieGridAdapter.setData(mMovies);
+            } else {
+                updateMovies(mSortBy);
+            }
         } else {
             updateMovies(mSortBy);
         }
@@ -154,13 +197,19 @@ public class MainActivityFragment  extends Fragment{
     }
 
     private void updateMovies(String sort_by) {
+        if (!sort_by.contentEquals(FAVORITE)) {
             new FetchMoviesTask().execute(sort_by);
+        } else {
+            new FetchFavoriteMoviesTask(getActivity()).execute();
+        }
     }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (!mSortBy.contentEquals(POPULARITY_DESC)) {
             outState.putString(SORT_SETTING_KEY, mSortBy);
+        }
+        if (mMovies != null) {
+            outState.putParcelableArrayList(MOVIES_KEY, mMovies);
         }
         super.onSaveInstanceState(outState);
     }
@@ -257,6 +306,49 @@ public class MainActivityFragment  extends Fragment{
 
             // This will only happen if there was an error getting or parsing the forecast.
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Movie> movies) {
+            if (movies != null) {
+                if (mMovieGridAdapter != null) {
+                    mMovieGridAdapter.setData(movies);
+                }
+                mMovies = new ArrayList<>();
+                mMovies.addAll(movies);
+            }
+        }
+    }
+    public class FetchFavoriteMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
+
+        private Context mContext;
+
+        public FetchFavoriteMoviesTask(Context context) {
+            mContext = context;
+        }
+
+        private List<Movie> getFavoriteMoviesDataFromCursor(Cursor cursor) {
+            List<Movie> results = new ArrayList<>();
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    Movie movie = new Movie(cursor);
+                    results.add(movie);
+                } while (cursor.moveToNext());
+                cursor.close();
+            }
+            return results;
+        }
+
+        @Override
+        protected List<Movie> doInBackground(Void... params) {
+            Cursor cursor = mContext.getContentResolver().query(
+                    MovieContract.MovieEntry.CONTENT_URI,
+                    MOVIE_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+            return getFavoriteMoviesDataFromCursor(cursor);
         }
 
         @Override

@@ -3,9 +3,7 @@ package uk.co.keybound.popularmovies.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by Ismael on 10/06/2015.
- */
+
 public class Review {
 
     private String id;
