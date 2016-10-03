@@ -97,11 +97,7 @@ public class DetailActivityFragment extends Fragment {
 
             final MenuItem action_favorite = menu.findItem(R.id.action_favorite);
             MenuItem action_share = menu.findItem(R.id.action_share);
-            /*
-            action_favorite.setIcon(Utility.isFavorited(getActivity(), mMovie.getId()) == 1 ?
-                    R.drawable.abc_btn_rating_star_on_mtrl_alpha :
-                    R.drawable.abc_btn_rating_star_off_mtrl_alpha);
-            */
+
             new AsyncTask<Void, Void, Integer>() {
                 @Override
                 protected Integer doInBackground(Void... params) {

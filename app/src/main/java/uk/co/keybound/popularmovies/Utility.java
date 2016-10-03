@@ -2,6 +2,7 @@ package uk.co.keybound.popularmovies;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import uk.co.keybound.popularmovies.data.MovieContract;
 
@@ -22,8 +23,14 @@ public class Utility {
                 new String[] { Integer.toString(id) },   // selectionArgs
                 null    // sort order
         );
-        int numRows = cursor.getCount();
-        cursor.close();
+        int numRows = 0;
+        try {
+            numRows = cursor.getCount();
+            cursor.close();
+        }catch (NullPointerException e){
+            Log.w(Utility.class.getSimpleName(),e.getMessage(),e);
+            e.printStackTrace();
+        }
         return numRows;
     }
 }

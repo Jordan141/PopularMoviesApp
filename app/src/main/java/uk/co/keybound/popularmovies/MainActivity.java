@@ -10,6 +10,7 @@ import uk.co.keybound.popularmovies.model.Movie;
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback{
 
     private boolean mTwoPane;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +20,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             mTwoPane = true;
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movie_detail_container, new DetailActivityFragment())
+                        .replace(R.id.movie_detail_container, new DetailActivityFragment(),
+                                DetailActivityFragment.TAG)
                         .commit();
             }
         } else {

@@ -30,7 +30,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import uk.co.keybound.popularmovies.adapters.MovieGridAdapter;
 import uk.co.keybound.popularmovies.data.MovieContract;
 import uk.co.keybound.popularmovies.model.Movie;
@@ -42,7 +41,7 @@ import uk.co.keybound.popularmovies.model.Movie;
 
 public class MainActivityFragment  extends Fragment{
 
-    @BindView(R.id.gridview_movies)GridView mGridView;
+    private GridView mGridView;
 
     private MovieGridAdapter mMovieGridAdapter;
 
@@ -159,6 +158,7 @@ public class MainActivityFragment  extends Fragment{
 
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
+        mGridView = (GridView) view.findViewById(R.id.gridview_movies);
 
         mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
 
