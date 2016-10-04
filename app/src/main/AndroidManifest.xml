@@ -24,11 +24,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.keybound.popularmovies.MainActivity" />
         </activity>
-        <provder
+        <provider
             android:name=".data.MovieProvider"
             android:authorities="uk.co.keybound.popularmovies"
-            android:exported="true">
-            </provder>
+            android:exported="false"/>
     </application>
-
 </manifest>

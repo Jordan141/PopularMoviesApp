@@ -175,8 +175,7 @@ public class DetailActivityFragment extends Fragment {
                                         values.put(MovieContract.MovieEntry.COLUMN_RATING, mMovie.getRating());
                                         values.put(MovieContract.MovieEntry.COLUMN_DATE, mMovie.getDate());
 
-                                        return getActivity().getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,
-                                                values);
+                                        return getActivity().getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
                                     }
 
                                     @Override
